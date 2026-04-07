@@ -91,11 +91,11 @@ def extract_cig_zip(filepath: Path) -> pd.DataFrame:
                         except (json.JSONDecodeError, UnicodeDecodeError):
                             continue
 
-                        # Build searchable text
+                        # Build searchable text — combine ALL fields for filtering
                         oggetto_gara = obj.get("oggetto_gara", "") or ""
                         oggetto_lotto = obj.get("oggetto_lotto", "") or ""
                         desc_cpv = obj.get("descrizione_cpv", "") or ""
-                        combined = f"{oggetto_lotto or oggetto_gara} {desc_cpv}".strip()
+                        combined = f"{oggetto_gara} {oggetto_lotto} {desc_cpv}".strip()
 
                         if not passes_filter(combined):
                             filtered += 1
