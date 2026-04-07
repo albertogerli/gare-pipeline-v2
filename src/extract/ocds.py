@@ -112,6 +112,15 @@ def _get_lot_ids(tender: dict) -> str:
     return ""
 
 
+def _parse_procedure(tender: dict) -> str:
+    """Extract procedure name from procurementMethodDetails or procurementMethod."""
+    details = tender.get("procurementMethodDetails", "") or ""
+    if "TITLE:" in details:
+        return details.split("TITLE:", 1)[1].strip().title()
+    method = tender.get("procurementMethod", "") or ""
+    return method
+
+
 def extract_ocds_file(filepath: Path) -> pd.DataFrame:
     """
     Extract and filter a single OCDS JSON file.
@@ -213,7 +222,7 @@ def extract_ocds_file(filepath: Path) -> pd.DataFrame:
             "regione": regione,
             "aggiudicatario": supplier_name,
             "aggiudicatario_id": supplier_id,
-            "procedura": tender.get("procurementMethod", ""),
+            "procedura": _parse_procedure(tender),
             "tipo_appalto": tender.get("mainProcurementCategory", ""),
             "cpv": cpv,
             "stato_gara": tender.get("status", ""),

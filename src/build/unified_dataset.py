@@ -1163,8 +1163,8 @@ def merge_and_normalize(
     ]
     for field in key_fields:
         if field in df.columns:
-            n_valid = df[field].notna().sum()
-            n_valid -= (df[field].astype(str).isin(['nan', 'None', ''])).sum()
+            filled = df[field].fillna('')
+            n_valid = (filled.astype(str).str.strip() != '').sum()
             pct = n_valid / len(df) * 100
             bar = '█' * int(pct / 5) + '░' * (20 - int(pct / 5))
             logger.info(f"   {field:30s} {bar} {pct:5.1f}% ({n_valid:,})")
