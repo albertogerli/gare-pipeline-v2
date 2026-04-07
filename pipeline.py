@@ -21,6 +21,8 @@ Usage:
   python pipeline.py --deploy         # Step 7 only
   python pipeline.py --stats          # Show data statistics
   python pipeline.py --enrich         # Add document URLs (Phase 4)
+  python pipeline.py --update         # Incremental update (only new data)
+  python pipeline.py --update --force # Force full re-extraction
 """
 
 from __future__ import annotations
@@ -236,6 +238,8 @@ def main():
     parser.add_argument("--merge", action="store_true", help="Merge only (step 6)")
     parser.add_argument("--deploy", action="store_true", help="Deploy to dashboard")
     parser.add_argument("--enrich", action="store_true", help="Enrich with document URLs")
+    parser.add_argument("--update", action="store_true", help="Incremental update (only new data)")
+    parser.add_argument("--force", action="store_true", help="Force re-extraction (with --update)")
     parser.add_argument("--stats", action="store_true", help="Show statistics")
 
     args = parser.parse_args()
@@ -279,6 +283,10 @@ def main():
 
     elif args.enrich:
         step_enrich()
+
+    elif args.update:
+        from src.update import run_incremental_update
+        run_incremental_update(force=args.force)
 
     elapsed = time.time() - start
     logger.info(f"Pipeline completed in {elapsed / 60:.1f} minutes")
