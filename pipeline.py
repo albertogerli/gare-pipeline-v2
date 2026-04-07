@@ -141,9 +141,9 @@ def step_build_unified():
 
     logger.info("=" * 60)
     logger.info("STEP 6: Build unified dataset")
-    df = build_unified_dataset()
-    logger.info(f"Unified: {len(df)} records")
-    return df
+    output_path = build_unified_dataset()
+    logger.info(f"Unified: {output_path}")
+    return output_path
 
 
 def step_deploy():
