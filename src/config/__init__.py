@@ -1,0 +1,44 @@
+"""Configuration module for Gare project."""
+
+# Import all configuration variables
+from .config import (
+    BASE_DIR,
+    DATA_DIR,
+    TEMP_DIR,
+    OCDS_DIR,
+    OPENAI_API_KEY,
+    DEFAULT_MODEL,
+    DEFAULT_TEMPERATURE,
+    MAX_WORKERS,
+    CHUNK_SIZE,
+    REQUEST_TIMEOUT,
+    GAZZETTA_START_YEAR,
+    GAZZETTA_END_YEAR,
+    OCDS_START_YEAR,
+    OCDS_START_MONTH,
+    LOTTI_RAW_FILE,
+    LOTTI_ANALIZZATI_FILE,
+    GARE_ANALIZZATE_FILE,
+    RISULTATI_ANALISI_FILE,
+)
+
+__all__ = [
+    "BASE_DIR",
+    "DATA_DIR",
+    "TEMP_DIR",
+    "OCDS_DIR",
+    "OPENAI_API_KEY",
+    "DEFAULT_MODEL",
+    "DEFAULT_TEMPERATURE",
+    "MAX_WORKERS",
+    "CHUNK_SIZE",
+    "REQUEST_TIMEOUT",
+    "GAZZETTA_START_YEAR",
+    "GAZZETTA_END_YEAR",
+    "OCDS_START_YEAR",
+    "OCDS_START_MONTH",
+    "LOTTI_RAW_FILE",
+    "LOTTI_ANALIZZATI_FILE",
+    "GARE_ANALIZZATE_FILE",
+    "RISULTATI_ANALISI_FILE",
+]
