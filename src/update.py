@@ -201,40 +201,43 @@ def step_extract_new(state: dict, force: bool = False) -> dict:
         ]
 
     if new_ocds:
-        from src.extract.ocds import extract_ocds_file
-
         import pandas as pd
 
-        logger.info(f"Extracting {len(new_ocds)} OCDS file(s)...")
-        frames = []
-        for f in new_ocds:
-            df = extract_ocds_file(f)
-            if not df.empty:
-                frames.append(df)
-            summary["ocds_files_processed"] += 1
+        CATEGORIE_DIR.mkdir(parents=True, exist_ok=True)
 
-        if frames:
-            new_df = pd.concat(frames, ignore_index=True)
-            logger.info(f"New OCDS records: {len(new_df)}")
+        if force:
+            # Force: use extract_all_ocds directly (avoids double extraction)
+            from src.extract.ocds import extract_all_ocds
 
-            # Merge with existing CSV if not force
-            CATEGORIE_DIR.mkdir(parents=True, exist_ok=True)
-            if not force and OCDS_CSV.exists():
-                existing_df = pd.read_csv(OCDS_CSV, low_memory=False)
-                combined = pd.concat([existing_df, new_df], ignore_index=True)
-                # Deduplicate by ocid (OCDS identifier)
-                before = len(combined)
-                if "ocid" in combined.columns:
-                    combined.drop_duplicates(subset=["ocid"], keep="last", inplace=True)
-                after = len(combined)
-                if before != after:
-                    logger.info(f"OCDS dedup: {before} -> {after} ({before - after} removed)")
-                combined.to_csv(OCDS_CSV, index=False)
-            else:
-                # Force or no existing: also include all existing files
-                if force:
-                    from src.extract.ocds import extract_all_ocds
-                    extract_all_ocds(OCDS_DIR, OCDS_CSV)
+            logger.info(f"Force-extracting all {len(new_ocds)} OCDS files...")
+            extract_all_ocds(OCDS_DIR, OCDS_CSV)
+            summary["ocds_files_processed"] = len(new_ocds)
+        else:
+            # Incremental: extract only new files
+            from src.extract.ocds import extract_ocds_file
+
+            logger.info(f"Extracting {len(new_ocds)} new OCDS file(s)...")
+            frames = []
+            for f in new_ocds:
+                df = extract_ocds_file(f)
+                if not df.empty:
+                    frames.append(df)
+                summary["ocds_files_processed"] += 1
+
+            if frames:
+                new_df = pd.concat(frames, ignore_index=True)
+                logger.info(f"New OCDS records: {len(new_df)}")
+
+                if OCDS_CSV.exists():
+                    existing_df = pd.read_csv(OCDS_CSV, low_memory=False)
+                    combined = pd.concat([existing_df, new_df], ignore_index=True)
+                    before = len(combined)
+                    if "ocid" in combined.columns:
+                        combined.drop_duplicates(subset=["ocid"], keep="last", inplace=True)
+                    after = len(combined)
+                    if before != after:
+                        logger.info(f"OCDS dedup: {before} -> {after} ({before - after} removed)")
+                    combined.to_csv(OCDS_CSV, index=False)
                 else:
                     new_df.to_csv(OCDS_CSV, index=False)
 
@@ -258,37 +261,41 @@ def step_extract_new(state: dict, force: bool = False) -> dict:
         ]
 
     if new_cig:
-        from src.extract.cig_json import extract_cig_zip
-
         import pandas as pd
 
-        logger.info(f"Extracting {len(new_cig)} CIG JSON file(s)...")
-        frames = []
-        for f in new_cig:
-            df = extract_cig_zip(f)
-            if not df.empty:
-                frames.append(df)
-            summary["cig_files_processed"] += 1
+        CATEGORIE_DIR.mkdir(parents=True, exist_ok=True)
 
-        if frames:
-            new_df = pd.concat(frames, ignore_index=True)
-            logger.info(f"New CIG JSON records: {len(new_df)}")
+        if force:
+            from src.extract.cig_json import extract_all_cig_json
 
-            CATEGORIE_DIR.mkdir(parents=True, exist_ok=True)
-            if not force and CIG_CSV.exists():
-                existing_df = pd.read_csv(CIG_CSV, low_memory=False)
-                combined = pd.concat([existing_df, new_df], ignore_index=True)
-                before = len(combined)
-                if "cig" in combined.columns:
-                    combined.drop_duplicates(subset=["cig"], keep="last", inplace=True)
-                after = len(combined)
-                if before != after:
-                    logger.info(f"CIG dedup: {before} -> {after} ({before - after} removed)")
-                combined.to_csv(CIG_CSV, index=False)
-            else:
-                if force:
-                    from src.extract.cig_json import extract_all_cig_json
-                    extract_all_cig_json(CIG_JSON_DIR, CIG_CSV)
+            logger.info(f"Force-extracting all {len(new_cig)} CIG JSON files...")
+            extract_all_cig_json(CIG_JSON_DIR, CIG_CSV)
+            summary["cig_files_processed"] = len(new_cig)
+        else:
+            from src.extract.cig_json import extract_cig_zip
+
+            logger.info(f"Extracting {len(new_cig)} new CIG JSON file(s)...")
+            frames = []
+            for f in new_cig:
+                df = extract_cig_zip(f)
+                if not df.empty:
+                    frames.append(df)
+                summary["cig_files_processed"] += 1
+
+            if frames:
+                new_df = pd.concat(frames, ignore_index=True)
+                logger.info(f"New CIG JSON records: {len(new_df)}")
+
+                if CIG_CSV.exists():
+                    existing_df = pd.read_csv(CIG_CSV, low_memory=False)
+                    combined = pd.concat([existing_df, new_df], ignore_index=True)
+                    before = len(combined)
+                    if "cig" in combined.columns:
+                        combined.drop_duplicates(subset=["cig"], keep="last", inplace=True)
+                    after = len(combined)
+                    if before != after:
+                        logger.info(f"CIG dedup: {before} -> {after} ({before - after} removed)")
+                    combined.to_csv(CIG_CSV, index=False)
                 else:
                     new_df.to_csv(CIG_CSV, index=False)
 
