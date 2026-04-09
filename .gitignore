@@ -1,0 +1,44 @@
+# Data (too large for git)
+data/
+Gare.xlsx
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Environment
+.env
+.venv/
+venv/
+
+# IDE / tooling
+.claude/
+.claude-flow/
+.hive-mind/
+.swarm/
+.roo/
+.mcp.json
+claude-flow.config.json
+.DS_Store
+
+# Build artifacts
+artifacts/
+/build/
+*.log
+
+# Legacy
+legacy/
+
+# Config (local)
+config/
+
+# Docs (generated)
+docs/
+
+# Memory (auto-generated)
+memory/
+
+# Tests cache
+tests/__pycache__/
+scripts/__pycache__/
